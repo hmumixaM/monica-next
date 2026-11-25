@@ -3,7 +3,6 @@ name: CI and container builds
 on:
   push:
     branches: [main]
-  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -15,6 +14,7 @@ concurrency:
 
 jobs:
   privacy:
+    if: github.ref == 'refs/heads/main'
     name: Public content checks
     runs-on: ubuntu-latest
     steps:
@@ -22,6 +22,7 @@ jobs:
       - run: python3 scripts/check-public.py
 
   api:
+    if: github.ref == 'refs/heads/main'
     name: API lint and tests
     runs-on: ubuntu-latest
     services:
@@ -58,6 +59,7 @@ jobs:
         run: uv run pytest -q
 
   web:
+    if: github.ref == 'refs/heads/main'
     name: Web lint and production build
     runs-on: ubuntu-latest
     steps:
@@ -81,6 +83,7 @@ jobs:
         run: npm run build:web
 
   compose:
+    if: github.ref == 'refs/heads/main'
     name: Validate Docker Compose
     runs-on: ubuntu-latest
     steps:
@@ -91,6 +94,7 @@ jobs:
         run: docker compose -f infra/docker-compose.yml config --quiet
 
   containers:
+    if: github.ref == 'refs/heads/main'
     name: Build ${{ matrix.service }} container
     runs-on: ubuntu-latest
     strategy:
